@@ -1,6 +1,11 @@
 # 应用服务 WEB 访问端口
 server:
   port: 8899
+  tomcat:
+    max-http-form-post-size: 50MB  # 表单提交大小限制
+    max-http-header-size: 128KB     # 请求头大小限制
+    max-swallow-size: 50MB         # 请求体大小限制
+  max-http-request-header-size: 128KB
 
 spring:
   profiles:
