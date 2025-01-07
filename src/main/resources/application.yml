@@ -1,0 +1,90 @@
+# 应用服务 WEB 访问端口
+server:
+  port: 8899
+
+spring:
+  profiles:
+    active: local
+  security:
+    filter:
+      order: 10
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tingyue?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: a1234567
+    
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.hgh.tingyue.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+jwt:
+  secret: aVeryLongSecretKeyThatIsAtLeast32CharactersLong
+  expiration: 86400  # 24小时
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.hgh.tingyue: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+  file:
+    name: logs/tingyue.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+
+# Knife4j配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.hgh.tingyue.controller
+  packages-to-scan: com.hgh.tingyue.controller
+  paths-to-match: /**
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    swagger-model-name: 实体类列表
+  documents:
+    - name: 项目文档
+      locations: classpath:docs/*
+  basic:
+    enable: false
+
+# TODO: 从Github上拉取下来后需要做如下配置
+#aliyun:
+#  oss:
+#    endpoint:
+#    accessKeyId:
+#    accessKeySecret:
+#    bucketName:
+#
+#  senseVoice:
+#    accessKeyId:
+#    accessKeySecret:
+#  dashscope:
+#    api-key:

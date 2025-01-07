@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgh.tingyue.mapper.TranscriptionMapper">
+    <select id="findByAudioFileId" resultType="com.hgh.tingyue.entity.Transcription">
+        SELECT * FROM transcriptions 
+        WHERE audio_file_id = #{audioFileId} 
+        ORDER BY created_at DESC
+    </select>
+</mapper> 
