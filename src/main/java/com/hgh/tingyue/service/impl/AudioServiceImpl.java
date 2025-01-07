@@ -45,16 +45,29 @@ public class AudioServiceImpl implements AudioService {
         try {
             log.info("开始语音识别，路径：{}", audioPath);
 
+            // 检查参数
+            if (!StringUtils.hasText(audioPath)) {
+                throw new IllegalArgumentException("音频文件路径不能为空");
+            }
+
             // 检查API密钥
             if (!StringUtils.hasText(apiKey)) {
                 throw new RuntimeException("未配置阿里云API密钥");
+            }
+
+            // 如果是本地文件，需要转换为File对象
+            if (!audioPath.startsWith("http")) {
+                File audioFile = new File(audioPath);
+                if (!audioFile.exists()) {
+                    throw new RuntimeException("音频文件不存在：" + audioPath);
+                }
             }
 
             // 构建参数
             TranscriptionParam param = TranscriptionParam.builder()
                     .apiKey(apiKey)
                     .model("paraformer-v2")
-                    .fileUrls(Collections.singletonList(audioPath)) // 直接使用URL或本地路径
+                    .fileUrls(Collections.singletonList(audioPath))
                     .parameter("language_hints", new String[] { "zh", "en" })
                     .build();
 
@@ -62,7 +75,7 @@ public class AudioServiceImpl implements AudioService {
             Transcription transcription = new Transcription();
 
             // 提交转写请求
-            log.debug("提交转写请求");
+            log.debug("提交转写请求，参数：{}", param);
             TranscriptionResult result = transcription.asyncCall(param);
             String taskId = result.getTaskId();
             log.info("转写任务已提交，TaskId: {}", taskId);
@@ -78,8 +91,12 @@ public class AudioServiceImpl implements AudioService {
                 throw new RuntimeException("未获取到转写结果");
             }
 
-            // 获取转写结果的URL
-            String transcriptionUrl = taskResultList.get(0).getTranscriptionUrl();
+            // 获取转写结果URL
+            TranscriptionTaskResult taskResult = taskResultList.get(0);
+            String transcriptionUrl = taskResult.getTranscriptionUrl();
+            if (!StringUtils.hasText(transcriptionUrl)) {
+                throw new RuntimeException("转写结果URL为空");
+            }
             log.debug("获取转写结果URL: {}", transcriptionUrl);
 
             // 通过HTTP获取结果

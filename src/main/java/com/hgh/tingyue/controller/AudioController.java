@@ -37,57 +37,6 @@ public class AudioController {
     private final AudioService audioService;
     private final OssService ossService;
 
-    @Operation(summary = "音频文件转写")
-    @PostMapping(value = "/transcribe", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<TranscriptionResponse> transcribeAudio(
-            @RequestPart("file") MultipartFile file,
-            @RequestParam(required = false, defaultValue = "false") boolean saveToOss) {
-        try {
-            log.info("接收到音频文件：{}，大小：{} bytes", file.getOriginalFilename(), file.getSize());
-
-            // 验证文件
-            if (file.isEmpty()) {
-                return ResponseEntity.badRequest().body(new TranscriptionResponse("文件为空"));
-            }
-
-            // 验证文件格式
-            String contentType = file.getContentType();
-            if (contentType == null || !contentType.startsWith("audio/")) {
-                return ResponseEntity.badRequest().body(new TranscriptionResponse("不支持的文件格式：" + contentType));
-            }
-
-            String transcription;
-            if (saveToOss) {
-                // 上传到OSS并转写
-                String fileUrl = ossService.uploadFile(file);
-                log.info("文件已上传到OSS：{}", fileUrl);
-                transcription = audioService.recognizeAudio(fileUrl);
-            } else {
-                // 使用临时文件转写
-                Path tempFile = Files.createTempFile("audio-", getExtension(file.getOriginalFilename()));
-                try {
-                    file.transferTo(tempFile.toFile());
-                    transcription = audioService.recognizeAudio(tempFile.toString());
-                } finally {
-                    Files.deleteIfExists(tempFile);
-                }
-            }
-
-            log.info("音频转写完成，文本长度：{}", transcription.length());
-            return ResponseEntity.ok(new TranscriptionResponse(transcription));
-
-        } catch (Exception e) {
-            log.error("音频处理失败", e);
-            String errorMessage = e instanceof IOException ? "音频文件处理失败: " + e.getMessage()
-                    : "音频转写失败: " + e.getMessage();
-            return ResponseEntity.internalServerError().body(new TranscriptionResponse(errorMessage));
-        }
-    }
-
-    private String getExtension(String filename) {
-        return filename != null ? filename.substring(filename.lastIndexOf(".")) : ".wav";
-    }
-
     @Operation(summary = "开始实时语音识别")
     @PostMapping("/recognize/stream")
     public SseEmitter startStreamRecognition(

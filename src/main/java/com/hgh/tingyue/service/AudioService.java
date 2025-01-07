@@ -5,26 +5,26 @@ import java.nio.ByteBuffer;
 
 public interface AudioService {
     /**
-     * 文件语音识别
+     * 识别音频文件
      *
-     * @param audioFilePath 音频文件路径
-     * @return 识别出的文本
+     * @param audioPath 音频文件路径或URL
+     * @return 识别结果文本
      */
-    String recognizeAudio(String audioFilePath);
+    String recognizeAudio(String audioPath);
 
     /**
-     * 实时语音识别
+     * 识别音频流
      *
      * @param audioSource 音频数据流
-     * @param callback    识别结果回调
+     * @param callback    回调接口
      */
     void recognizeStreamAudio(Flowable<ByteBuffer> audioSource, RecognitionCallback callback);
 
     /**
-     * 开始实时录音识别
-     * 
-     * @param durationMillis 录音时长(毫秒)
-     * @param callback       识别结果回调
+     * 开始录音识别
+     *
+     * @param durationMillis 录音时长（毫秒）
+     * @param callback       回调接口
      */
     void startRecognition(long durationMillis, RecognitionCallback callback);
 }
