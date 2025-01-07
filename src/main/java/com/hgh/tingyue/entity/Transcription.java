@@ -6,7 +6,6 @@
  */
 package com.hgh.tingyue.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -15,7 +14,6 @@ public class Transcription {
     /**
      * 转写记录ID
      */
-    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
@@ -26,12 +24,7 @@ public class Transcription {
     /**
      * 转写文本内容
      */
-    private String textContent;
-
-    /**
-     * 语言
-     */
-    private String language;
+    private String content;
 
     /**
      * 转写状态（进行中/完成/失败）
@@ -39,14 +32,17 @@ public class Transcription {
     private String status;
 
     /**
+     * 用户ID
+     */
+    private Long userId;
+
+    /**
      * 创建时间
      */
-    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
     /**
      * 更新时间
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
 }

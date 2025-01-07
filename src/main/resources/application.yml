@@ -34,8 +34,8 @@ mybatis-plus:
       logic-not-delete-value: 0
 
 jwt:
-  secret: aVeryLongSecretKeyThatIsAtLeast32CharactersLong
-  expiration: 86400  # 24小时
+  secret: your_jwt_secret_key_here_must_be_very_long_at_least_256_bits
+  expiration: 86400  # 24小时，单位：秒
 
 # 日志配置
 logging:

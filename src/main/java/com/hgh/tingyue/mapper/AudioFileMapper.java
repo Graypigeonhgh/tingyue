@@ -7,5 +7,9 @@ import java.util.List;
 
 @Mapper
 public interface AudioFileMapper extends BaseMapper<AudioFile> {
-    List<AudioFile> findByUserId(Long userId);
+    int insert(AudioFile audioFile);
+
+    AudioFile selectById(Long id);
+
+    List<AudioFile> selectByUserId(Long userId);
 }

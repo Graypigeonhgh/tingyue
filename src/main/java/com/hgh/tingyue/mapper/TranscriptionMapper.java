@@ -6,6 +6,10 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface TranscriptionMapper extends BaseMapper<Transcription> {
-    List<Transcription> findByAudioFileId(Long audioFileId);
+public interface TranscriptionMapper {
+    int insert(Transcription transcription);
+
+    Transcription selectById(Long id);
+
+    List<Transcription> selectByAudioFileId(Long audioFileId);
 }
