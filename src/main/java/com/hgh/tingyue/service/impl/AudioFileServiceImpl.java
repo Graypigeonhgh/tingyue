@@ -121,9 +121,6 @@ public class AudioFileServiceImpl implements AudioFileService {
         if (request.getFileName() != null) {
             file.setFileName(request.getFileName());
         }
-//        if (request.getRemark() != null) {
-//            file.setRemark(request.getRemark());
-//        }
 
         // 保存更新
         audioFileMapper.updateById(file);

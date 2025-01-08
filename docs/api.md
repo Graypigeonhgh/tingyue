@@ -75,16 +75,26 @@ file: [音频文件]  // 支持的格式：MP3、WAV、M4A等
     "fileUrl": "https://xxx.oss-cn-xxx.aliyuncs.com/xxx.mp3",
     "fileSize": 1024567,
     "fileType": "audio/mpeg",
+    "remark": null,
     "userId": 1,
     "createdAt": "2024-01-09T10:00:00",
     "updatedAt": "2024-01-09T10:00:00"
 }
 ```
 
+请求限制：
+- 文件大小上限：1024MB（可配置）
+- 支持的音频格式：MP3、WAV、M4A、AAC、FLAC等
+- 需要认证
+
 #### 2. 获取音频文件列表
 ```http
 GET /api/audio-files?page=1&pageSize=10
 ```
+
+参数说明：
+- page: 页码，从1开始，默认1
+- pageSize: 每页数量，默认10
 
 响应示例：
 ```json
@@ -96,6 +106,7 @@ GET /api/audio-files?page=1&pageSize=10
             "fileUrl": "https://xxx.oss-cn-xxx.aliyuncs.com/xxx.mp3",
             "fileSize": 1024567,
             "fileType": "audio/mpeg",
+            "remark": "这是一段重要的会议记录",
             "userId": 1,
             "createdAt": "2024-01-09T10:00:00",
             "updatedAt": "2024-01-09T10:00:00"
@@ -122,6 +133,7 @@ GET /api/audio-files/{id}
         "fileUrl": "https://xxx.oss-cn-xxx.aliyuncs.com/xxx.mp3",
         "fileSize": 1024567,
         "fileType": "audio/mpeg",
+        "remark": "这是一段重要的会议记录",
         "userId": 1,
         "createdAt": "2024-01-09T10:00:00",
         "updatedAt": "2024-01-09T10:00:00"
@@ -139,7 +151,7 @@ GET /api/audio-files/{id}
 ```
 
 说明：
-- audioFile：音频文件的基本信息
+- audioFile：音频文件的基本信息，包含备注字段
 - transcription：音频文件的转写记录，如果还未转写则为 null
 - status 可能的值：
   - PENDING：等待转写
@@ -159,14 +171,18 @@ DELETE /api/audio-files/{id}
 }
 ```
 
+说明：
+- 删除音频文件会同时删除OSS中的文件和数据库记录
+- 只能删除自己上传的文件
+- 删除成功返回 true，失败抛出异常
+
 #### 5. 更新音频文件信息
 ```http
 PUT /api/audio-files/{id}
 Content-Type: application/json
 
 {
-    "fileName": "新的文件名.mp3",  // 可选，新的文件名
-    "remark": "这是一段重要的会议记录"  // 可选，文件备注
+    "fileName": "新的文件名.mp3"     // 可选，新的文件名，最大255字符
 }
 ```
 
@@ -178,7 +194,6 @@ Content-Type: application/json
     "fileUrl": "https://xxx.oss-cn-xxx.aliyuncs.com/xxx.mp3",
     "fileSize": 1024567,
     "fileType": "audio/mpeg",
-    "remark": "这是一段重要的会议记录",
     "userId": 1,
     "createdAt": "2024-01-09T10:00:00",
     "updatedAt": "2024-01-09T10:00:00"
@@ -186,11 +201,11 @@ Content-Type: application/json
 ```
 
 说明：
-- 文件名和备注字段都是可选的
+- 文件名是可选的
 - 文件名长度不能超过255个字符
-- 备注长度不能超过500个字符
 - 只能修改自己上传的文件
 - 更新成功后返回完整的文件信息
+- 不允许修改文件URL、大小等核心信息
 
 ### 音频转写
 
