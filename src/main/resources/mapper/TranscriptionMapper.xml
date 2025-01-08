@@ -8,4 +8,13 @@
             #{audioFileId}, #{content}, #{status}, #{userId}, NOW(), NOW()
         )
     </insert>
+
+    <select id="selectLatestByAudioFileId" resultType="com.hgh.tingyue.entity.Transcription">
+        SELECT 
+            id, audio_file_id, content, status, user_id, created_at, updated_at
+        FROM transcriptions 
+        WHERE audio_file_id = #{audioFileId}
+        ORDER BY created_at DESC
+        LIMIT 1
+    </select>
 </mapper> 

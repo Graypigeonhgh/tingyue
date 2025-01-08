@@ -116,16 +116,36 @@ GET /api/audio-files/{id}
 响应示例：
 ```json
 {
-    "id": 1,
-    "fileName": "test.mp3",
-    "fileUrl": "https://xxx.oss-cn-xxx.aliyuncs.com/xxx.mp3",
-    "fileSize": 1024567,
-    "fileType": "audio/mpeg",
-    "userId": 1,
-    "createdAt": "2024-01-09T10:00:00",
-    "updatedAt": "2024-01-09T10:00:00"
+    "audioFile": {
+        "id": 1,
+        "fileName": "test.mp3",
+        "fileUrl": "https://xxx.oss-cn-xxx.aliyuncs.com/xxx.mp3",
+        "fileSize": 1024567,
+        "fileType": "audio/mpeg",
+        "userId": 1,
+        "createdAt": "2024-01-09T10:00:00",
+        "updatedAt": "2024-01-09T10:00:00"
+    },
+    "transcription": {
+        "id": 1,
+        "audioFileId": 1,
+        "content": "转写的文本内容...",
+        "status": "COMPLETED",
+        "userId": 1,
+        "createdAt": "2024-01-09T10:01:00",
+        "updatedAt": "2024-01-09T10:01:00"
+    }
 }
 ```
+
+说明：
+- audioFile：音频文件的基本信息
+- transcription：音频文件的转写记录，如果还未转写则为 null
+- status 可能的值：
+  - PENDING：等待转写
+  - PROCESSING：转写中
+  - COMPLETED：转写完成
+  - FAILED：转写失败
 
 #### 4. 删除音频文件
 ```http
@@ -138,6 +158,39 @@ DELETE /api/audio-files/{id}
     "success": true
 }
 ```
+
+#### 5. 更新音频文件信息
+```http
+PUT /api/audio-files/{id}
+Content-Type: application/json
+
+{
+    "fileName": "新的文件名.mp3",  // 可选，新的文件名
+    "remark": "这是一段重要的会议记录"  // 可选，文件备注
+}
+```
+
+响应示例：
+```json
+{
+    "id": 1,
+    "fileName": "新的文件名.mp3",
+    "fileUrl": "https://xxx.oss-cn-xxx.aliyuncs.com/xxx.mp3",
+    "fileSize": 1024567,
+    "fileType": "audio/mpeg",
+    "remark": "这是一段重要的会议记录",
+    "userId": 1,
+    "createdAt": "2024-01-09T10:00:00",
+    "updatedAt": "2024-01-09T10:00:00"
+}
+```
+
+说明：
+- 文件名和备注字段都是可选的
+- 文件名长度不能超过255个字符
+- 备注长度不能超过500个字符
+- 只能修改自己上传的文件
+- 更新成功后返回完整的文件信息
 
 ### 音频转写
 

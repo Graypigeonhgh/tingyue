@@ -58,4 +58,7 @@ CREATE TABLE IF NOT EXISTS translations (
     target_language VARCHAR(10) NOT NULL COMMENT '目标语言',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     KEY idx_user_id (user_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='翻译记录表'; 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='翻译记录表';
+
+ALTER TABLE audio_files
+ADD COLUMN remark VARCHAR(500) DEFAULT NULL COMMENT '备注'; 

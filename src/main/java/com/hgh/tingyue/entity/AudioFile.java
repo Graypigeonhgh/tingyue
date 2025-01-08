@@ -46,4 +46,8 @@ public class AudioFile {
     @Schema(description = "更新时间")
     @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
+
+    @Schema(description = "备注")
+    @TableField(value = "remark")
+    private String remark;
 }

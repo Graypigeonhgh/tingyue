@@ -2,6 +2,8 @@ package com.hgh.tingyue.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hgh.tingyue.entity.AudioFile;
+import com.hgh.tingyue.dto.response.AudioFileDetailResponse;
+import com.hgh.tingyue.dto.request.AudioFileUpdateRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface AudioFileService {
@@ -38,7 +40,17 @@ public interface AudioFileService {
      *
      * @param id     文件ID
      * @param userId 用户ID
-     * @return 音频文件信息
+     * @return 音频文件详情（包含转写信息）
      */
-    AudioFile getFileDetail(Long id, Long userId);
+    AudioFileDetailResponse getFileDetail(Long id, Long userId);
+
+    /**
+     * 更新音频文件信息
+     *
+     * @param id      文件ID
+     * @param userId  用户ID
+     * @param request 更新请求
+     * @return 更新后的音频文件信息
+     */
+    AudioFile updateFile(Long id, Long userId, AudioFileUpdateRequest request);
 }
