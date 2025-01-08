@@ -11,4 +11,4 @@ CREATE INDEX idx_transcriptions_status ON transcriptions(status);
 
 -- 翻译记录表索引
 CREATE INDEX idx_translations_created_at ON translations(created_at);
-CREATE INDEX idx_translations_user_created ON translations(user_id, created_at); 
+CREATE INDEX idx_translations_user_created ON translations(user_id, created_at);

@@ -26,17 +26,15 @@ spring:
 
 
 mybatis-plus:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.hgh.tingyue.entity
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
+      table-underline: true
       id-type: auto
-      logic-delete-field: deleted
-      logic-delete-value: 1
-      logic-not-delete-value: 0
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.hgh.tingyue.entity
 
 jwt:
   secret: your_jwt_secret_key_here_must_be_very_long_at_least_256_bits

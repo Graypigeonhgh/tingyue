@@ -47,4 +47,27 @@ public class OssServiceImpl implements OssService {
             }
         }
     }
+
+    @Override
+    public void deleteFile(String fileUrl) {
+        OSS ossClient = null;
+        try {
+            ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+            
+            // 从URL中提取文件名
+            String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+            
+            ossClient.deleteObject(bucketName, fileName);
+            log.info("文件已从OSS删除：{}", fileName);
+            
+        } catch (Exception e) {
+            log.error("删除OSS文件失败", e);
+            throw new RuntimeException("删除文件失败: " + e.getMessage(), e);
+        } finally {
+            if (ossClient != null) {
+                ossClient.shutdown();
+                log.debug("OSS客户端已关闭");
+            }
+        }
+    }
 }

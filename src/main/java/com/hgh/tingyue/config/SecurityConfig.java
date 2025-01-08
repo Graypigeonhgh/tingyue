@@ -19,6 +19,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
@@ -35,7 +36,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable())
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.addAllowedOriginPattern("*");
+                    config.setAllowCredentials(true);
+                    config.addAllowedHeader("*");
+                    config.addAllowedMethod("*");
+                    config.addExposedHeader("*");
+                    return config;
+                }))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -50,8 +59,6 @@ public class SecurityConfig {
                                 "/favicon.ico")
                         .permitAll()
                         .requestMatchers("/api/user/register", "/api/user/login").permitAll()
-                        // .requestMatchers("/api/**").authenticated()
-                        // .anyRequest().permitAll())
                         .requestMatchers("/api/**").authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(withDefaults())

@@ -10,4 +10,11 @@ public interface OssService {
      * @return 文件的访问URL
      */
     String uploadFile(MultipartFile file);
+
+    /**
+     * 从OSS删除文件
+     *
+     * @param fileUrl 文件URL
+     */
+    void deleteFile(String fileUrl);
 }

@@ -8,4 +8,34 @@
             #{fileName}, #{fileUrl}, #{fileSize}, #{fileType}, #{userId}, NOW(), NOW()
         )
     </insert>
+
+    <select id="selectById" resultType="com.hgh.tingyue.entity.AudioFile">
+        SELECT 
+            id, file_name, file_url, file_size, file_type, user_id, created_at, updated_at
+        FROM audio_files 
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserId" resultType="com.hgh.tingyue.entity.AudioFile">
+        SELECT 
+            id, file_name, file_url, file_size, file_type, user_id, created_at, updated_at
+        FROM audio_files 
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="selectPage" resultType="com.hgh.tingyue.entity.AudioFile">
+        SELECT 
+            id, file_name, file_url, file_size, file_type, user_id, created_at, updated_at
+        FROM audio_files 
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectCount" resultType="long">
+        SELECT COUNT(*)
+        FROM audio_files
+        WHERE user_id = #{userId}
+    </select>
 </mapper> 

@@ -215,4 +215,141 @@ Cannot invoke "com.google.gson.JsonElement.getAsString()" because the return val
 ### 3. 访问控制
 - 实现用户认证
 - 添加操作审计
-- 控制资源访问权限 
+- 控制资源访问权限
+
+## 跨域问题处理
+
+### 1. 常见跨域错误
+**错误信息**：
+```
+Access to XMLHttpRequest at 'http://localhost:8899/api/xxx' from origin 'http://localhost:3000' has been blocked by CORS policy
+```
+
+**可能原因**：
+- 未配置 CORS
+- CORS 配置不正确
+- 前端请求配置问题
+- 多重代理导致的 CORS 配置失效
+
+### 2. 解决方案
+
+#### 2.1 后端配置
+1. 添加 CORS 配置类
+```java
+@Configuration
+public class CorsConfig {
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOriginPattern("*");
+        config.setAllowCredentials(true);
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.addExposedHeader("*");
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+}
+```
+
+2. 在 SecurityConfig 中配置 CORS
+```java
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http
+        .cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.addAllowedOriginPattern("*");
+            config.setAllowCredentials(true);
+            config.addAllowedHeader("*");
+            config.addAllowedMethod("*");
+            return config;
+        }))
+        // ... 其他配置
+        .build();
+}
+```
+
+3. 在 WebConfig 中配置 CORS
+```java
+@Override
+public void addCorsMappings(CorsRegistry registry) {
+    registry.addMapping("/**")
+            .allowedOriginPatterns("*")
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            .allowedHeaders("*")
+            .allowCredentials(true)
+            .maxAge(3600);
+}
+```
+
+#### 2.2 前端配置
+1. Axios 配置
+```javascript
+// 允许跨域携带认证信息
+axios.defaults.withCredentials = true;
+
+// 添加请求拦截器
+axios.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+```
+
+2. Fetch API 配置
+```javascript
+fetch(url, {
+  credentials: 'include',
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  }
+})
+```
+
+#### 2.3 Nginx 配置
+如果使用 Nginx 作为反向代理，需要添加以下配置：
+```nginx
+location /api {
+    add_header 'Access-Control-Allow-Origin' '*';
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
+    add_header 'Access-Control-Allow-Headers' '*';
+    add_header 'Access-Control-Allow-Credentials' 'true';
+    
+    if ($request_method = 'OPTIONS') {
+        add_header 'Access-Control-Max-Age' 3600;
+        add_header 'Content-Type' 'text/plain charset=UTF-8';
+        add_header 'Content-Length' 0;
+        return 204;
+    }
+    
+    proxy_pass http://backend;
+}
+```
+
+### 3. 注意事项
+
+1. 安全考虑
+   - 生产环境不要使用 `*` 通配符
+   - 明确指定允许的域名
+   - 限制必要的请求方法和请求头
+
+2. 调试技巧
+   - 使用浏览器开发者工具查看请求头和响应头
+   - 检查 OPTIONS 预检请求是否正常
+   - 验证 token 是否正确携带
+
+3. 常见陷阱
+   - 同时配置了多个 CORS 可能会冲突
+   - 忘记配置 OPTIONS 请求的处理
+   - withCredentials 与 Access-Control-Allow-Origin: * 冲突
+
+4. 最佳实践
+   - 使用环境变量配置允许的域名
+   - 实现跨域请求的日志记录
+   - 添加跨域相关的监控指标 
