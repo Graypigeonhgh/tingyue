@@ -353,3 +353,101 @@ location /api {
    - 使用环境变量配置允许的域名
    - 实现跨域请求的日志记录
    - 添加跨域相关的监控指标 
+
+## Java 版本问题
+
+### 1. Java 版本不兼容错误
+**错误信息**：
+```
+Exception in thread "main" java.lang.UnsupportedClassVersionError: org/springframework/boot/loader/launch/JarLauncher has been compiled by a more recent version of the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions up to 52.0
+```
+
+**原因说明**：
+- 项目使用 Java 17 编译
+- 运行环境使用的是 Java 8
+- Spring Boot 3.x 要求最低 Java 17
+
+**解决方案**：
+
+1. 升级 Java 运行环境
+```bash
+# 查看当前 Java 版本
+java -version
+
+# 安装 Java 17
+# Windows: 下载并安装 JDK 17
+# Linux:
+sudo apt install openjdk-17-jdk  # Ubuntu
+sudo yum install java-17-openjdk # CentOS
+
+# 设置 JAVA_HOME
+# Windows:
+set JAVA_HOME=C:\Program Files\Java\jdk-17
+# Linux:
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+```
+
+2. 降级项目 Java 版本（不推荐）
+   - 修改 pom.xml 中的 Java 版本
+   ```xml
+   <properties>
+       <java.version>8</java.version>
+   </properties>
+   ```
+   - 降级 Spring Boot 版本到 2.x
+   ```xml
+   <parent>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-parent</artifactId>
+       <version>2.7.x</version>
+   </parent>
+   ```
+
+3. 验证 Java 版本
+```bash
+# 查看编译版本
+javac -version
+
+# 查看运行版本
+java -version
+
+# 确保两者都是 Java 17
+```
+
+### 2. 常见问题
+
+1. 多个 Java 版本共存
+   - 使用 JAVA_HOME 环境变量指定正确版本
+   - 使用版本管理工具（如 jenv）
+   - 检查 PATH 环境变量中的 Java 路径顺序
+
+2. IDE 配置
+   - 确保 IDE 使用正确的 JDK 版本
+   - 检查项目结构设置
+   - 更新 Maven/Gradle 配置
+
+3. CI/CD 环境
+   - 检查构建环境的 Java 版本
+   - 更新 Dockerfile 中的基础镜像
+   - 配置正确的 Java 运行时环境
+
+### 3. 最佳实践
+
+1. 版本统一
+   - 开发环境和生产环境使用相同的 Java 版本
+   - 在 pom.xml 中明确指定 Java 版本
+   - 使用 Maven 编译插件强制版本检查
+
+2. 文档说明
+   - 在 README.md 中注明所需的 Java 版本
+   - 提供版本升级指南
+   - 记录已知的版本兼容性问题
+
+3. 环境检查
+```bash
+# 添加版本检查脚本
+if [ "$(java -version 2>&1 | grep -i version | cut -d'"' -f2 | cut -d'.' -f1)" -lt "17" ]; then
+    echo "Error: Java 17 or higher is required"
+    exit 1
+fi
+``` 
